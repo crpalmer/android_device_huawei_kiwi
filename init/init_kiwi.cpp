@@ -100,15 +100,15 @@ static match_t matches[] = {
 
 void vendor_load_properties()
 {
-    char platform[PROP_VALUE_MAX];
+    std::string platform;
     char model[110];
-    char hwsim[PROP_VALUE_MAX];
+    std::string hwsim;
     FILE* fp;
     int rc;
     match_t *match;
 
-    rc = property_get("ro.board.platform", platform);
-    if (!rc || strncmp(platform, ANDROID_TARGET, PROP_VALUE_MAX))
+    platform = property_get("ro.board.platform");
+    if (strncmp(platform.c_str(), ANDROID_TARGET, PROP_VALUE_MAX))
         return;
 
     fp = fopen("/proc/app_info", "rb");
@@ -128,9 +128,9 @@ void vendor_load_properties()
     }
 
     // Fix single sim variant based on property set by the bootloader
-    rc = property_get("ro.boot.hwsim", hwsim);
+    hwsim = property_get("ro.boot.hwsim");
 
-    if (rc > 0 && !strncmp(hwsim, "single", PROP_VALUE_MAX)) {
+    if (!strncmp(hwsim.c_str(), "single", PROP_VALUE_MAX)) {
         property_set("ro.telephony.default_network", "9");
     } else {
         property_set("persist.radio.multisim.config", "dsds");
